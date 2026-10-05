@@ -1,0 +1,193 @@
+{
+  "name": "Tugas 3 - AI Chatbot NF Academy Google Sheet - Cinta Melati",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Assalamualaikum! 👋\nNama saya Cinta. Bagaimana saya bisa membantumu hari ini?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        512,
+        256
+      ],
+      "id": "dbc57fff-0b32-4b12-977b-cc124c6cc16d",
+      "name": "When chat message received",
+      "webhookId": "1a4b5804-5567-4391-b9c3-f959f33da4fb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu adalah chatbot AI NF Academy yang membantu pengguna mendapatkan informasi mengenai program pelatihan dan kursus yang tersedia.\n\nGunakan Google Sheets Tool untuk mencari data pelatihan yang dibutuhkan pengguna.\n\nInformasi yang dapat diberikan meliputi:\n- jenis atau program pelatihan\n- nama pelatihan atau kursus\n- deskripsi topik pelatihan atau kursus\n- biaya atau harga\n\nJawablah berdasarkan data yang tersedia di Google Sheets dan jangan membuat atau mengarang informasi yang tidak terdapat dalam data.\n\nJika pengguna menanyakan harga suatu pelatihan, cari nama pelatihan tersebut pada Google Sheets dan berikan harga yang sesuai.\n\nJika pengguna menanyakan deskripsi atau materi pelatihan, gunakan data pada kolom deskripsi.\n\nJawablah dengan bahasa Indonesia yang jelas, singkat, dan mudah dipahami."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        736,
+        256
+      ],
+      "id": "dd9d39d6-32be-452d-b476-33ade36e7d65",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        736,
+        80
+      ],
+      "id": "a5bd5ac1-3aa2-49c7-b971-411b646fb06a",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "f3wlzGfrK7JdP6pv",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        752,
+        464
+      ],
+      "id": "a5bf35b7-0695-434f-bf2c-231a1971ecbe",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UHkl8nbR2uPw3qS9bLIMEsj-aGhznxPdGE68o4gJrOE",
+          "mode": "list",
+          "cachedResultName": "n8n 1 - tugas 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHkl8nbR2uPw3qS9bLIMEsj-aGhznxPdGE68o4gJrOE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHkl8nbR2uPw3qS9bLIMEsj-aGhznxPdGE68o4gJrOE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        464
+      ],
+      "id": "478ba6e0-442b-4de6-81ac-5681b6f3f634",
+      "name": "Get row(s) in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DBHtW483DVzkLWTm",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6871642968",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1056,
+        256
+      ],
+      "id": "422afa22-2ab1-4f4e-8ae7-89ea9f9c5916",
+      "name": "Send a text message",
+      "webhookId": "df733c4d-94b8-4357-826d-14a78269fcc9",
+      "credentials": {
+        "telegramApi": {
+          "id": "BPHsZYOe3Pu6ICXz",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ec6fe695-a426-436f-90d0-8eeb76d730d5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "B3PoUt0N3kf5A8lP",
+  "tags": []
+}
